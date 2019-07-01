@@ -48,7 +48,7 @@ workflows:
       - consumer-build
       - consumer-deploy:
           requires:
-            - contact-build
+            - consumer-build
           filters:
             branches:
               only: master
