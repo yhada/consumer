@@ -2,8 +2,24 @@ package main
 
 import (
 	"fmt"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
+// MyEvent is
+type MyEvent struct {
+	Name string `json:"What is your name?"`
+}
+
+// MyResponse is
+type MyResponse struct {
+	Message string `json:"Answer:"`
+}
+
+func hello(event MyEvent) (MyResponse, error) {
+	return MyResponse{Message: fmt.Sprintf("Hello %s!!", event.Name)}, nil
+}
+
 func main() {
-	fmt.Println("Hello")
+	lambda.Start(hello)
 }
