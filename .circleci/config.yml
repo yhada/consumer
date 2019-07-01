@@ -4,11 +4,15 @@ jobs:
     docker:
       - image: circleci/golang:1.12.4
 
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    working_directory: /go/src/github.com/yhada/consumer
+
+    environment:
+      GO111MODULE: "on"
+
     steps:
       - checkout
 
-      - run: 
+      - run:
           name: Create dest
           command: mkdir -p /tmp/workspace
 
@@ -48,7 +52,7 @@ workflows:
       - consumer-build
       - consumer-deploy:
           requires:
-            - contact-build
+            - consumer-build
           filters:
             branches:
               only: master
