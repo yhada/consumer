@@ -1,0 +1,54 @@
+version: 2.1
+jobs:
+  consumer-build:
+    docker:
+      - image: circleci/golang:1.12.4
+
+    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    steps:
+      - checkout
+
+      - run: 
+          name: Create dest
+          command: mkdir -p /tmp/workspace
+
+      - run:
+          name: Build
+          command: make all
+
+      - run:
+          name: Copy
+          command: cp -r bin /tmp/workspace
+
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - bin/
+
+  consumer-deploy:
+    docker:
+      - image: ngiy/node
+
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+
+      - run:
+          name: zip
+          command: |
+            zip -rj ./consumer.zip /tmp/workspace/bin/consumer
+      - run:
+          name: deploy
+          command: |
+            aws lambda update-function-code --function-name hadaConsumer --zip-file fileb://$PWD/consumer.zip --publish
+workflows:
+  run_all:
+    jobs:
+      - consumer-build
+      - consumer-deploy:
+          requires:
+            - contact-build
+          filters:
+            branches:
+              only: master
