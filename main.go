@@ -1,25 +1,23 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-lambda-go/events"
 )
 
-// MyEvent is
-type MyEvent struct {
-	Name string `json:"What is your name?"`
-}
+func consumer(ctx context.Context, kinesisEvent events.KinesisEvent) {
+	for _, record := range kinesisEvent.Records {
+        kinesisRecord := record.Kinesis
+        dataBytes := kinesisRecord.Data
+        dataText := string(dataBytes)
 
-// MyResponse is
-type MyResponse struct {
-	Message string `json:"Answer:"`
-}
-
-func hello(event MyEvent) (MyResponse, error) {
-	return MyResponse{Message: fmt.Sprintf("Hello %s!!", event.Name)}, nil
+        fmt.Printf("%s Data = %s \n", record.EventName, dataText)
+    }
 }
 
 func main() {
-	lambda.Start(hello)
+	lambda.Start(consumer)
 }
