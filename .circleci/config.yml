@@ -8,7 +8,7 @@ jobs:
     steps:
       - checkout
 
-      - run: 
+      - run:
           name: Create dest
           command: mkdir -p /tmp/workspace
 
